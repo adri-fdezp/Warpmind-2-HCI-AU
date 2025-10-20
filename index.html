@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>WarpMind Instrument</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Add PDF.js library here (local file or CDN) -->
+  <script src="libs/pdf.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="title">WarpMind — Instrument of Illucidation</div>
+    <div class="controls">
+      <input id="pdf-input" type="file" accept="application/pdf" />
+      <button id="load-sample">Load sample PDF</button>
+      <label><input id="use-mock" type="checkbox" checked /> Mock mode</label>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <h3>Extracted concepts</h3>
+      <ul id="concept-list" class="concept-list"></ul>
+    </aside>
+
+    <section class="viewer">
+      <div class="pdf-toolbar">
+        <button id="prev-page">&lt;</button>
+        <span id="page-num">0</span> / <span id="page-count">0</span>
+        <button id="next-page">&gt;</button>
+      </div>
+      <canvas id="pdf-canvas"></canvas>
+    </section>
+
+    <section class="workspace" id="workspace">
+      <div class="workspace-hint">Open a concept from the left to start</div>
+    </section>
+  </main>
+
+  <template id="concept-view-template">
+    <div class="concept-card">
+      <header class="card-header">
+        <strong class="concept-title"></strong>
+        <div class="card-actions">
+          <button class="duplicate-btn" title="Duplicate">⧉</button>
+          <button class="close-btn" title="Close">✕</button>
+        </div>
+      </header>
+      <main class="card-body">
+        <div class="explanation" contenteditable="false">Loading explanation…</div>
+        <div class="params">
+          <label>Complexity <input type="range" class="param-complexity" min="1" max="10" value="5" /></label>
+          <label>Length <input type="range" class="param-length" min="5" max="50" value="15" /></label>
+          <label>Audience
+            <select class="param-audience">
+              <option>Five-year-old</option>
+              <option>Bachelor</option>
+              <option>Master</option>
+              <option>PhD</option>
+              <option>Policy maker</option>
+            </select>
+          </label>
+          <label>Form
+            <select class="param-form">
+              <option>Prose</option>
+              <option>Bulleted</option>
+            </select>
+          </label>
+          <label>Tone
+            <select class="param-tone">
+              <option>Neutral</option>
+              <option>Analogies</option>
+              <option>Formal</option>
+              <option>Conversational</option>
+            </select>
+          </label>
+          <label>Focus
+            <select class="param-focus">
+              <option>Definition</option>
+              <option>Mechanism</option>
+              <option>Use-cases</option>
+              <option>Mathematical Detail</option>
+            </select>
+          </label>
+        </div>
+      </main>
+      <footer class="card-footer">
+        <button class="refresh-btn">Refresh</button>
+        <button class="copy-btn">Copy</button>
+      </footer>
+    </div>
+  </template>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

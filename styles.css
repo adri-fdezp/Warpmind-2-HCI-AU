@@ -1,0 +1,266 @@
+/* student-style CSS: simpler, warmer colors, hand-made vibe, larger readable text,
+   subtle shadows, relaxed spacing, and playful accents */
+
+:root{
+  --bg:#f6f7fb;
+  --panel:#ffffff;
+  --muted:#6b7280;
+  --accent:#2563eb;
+  --accent-soft:#93c5fd;
+  --card-border:#e6e9f2;
+  --text:#0f1724;
+  --gap:14px;
+  --radius:10px;
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size:16px;
+}
+
+* { box-sizing: border-box; }
+
+html,body { height:100%; margin:0; background:var(--bg); color:var(--text); }
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.9));
+  border-bottom:1px solid var(--card-border);
+  gap:12px;
+}
+
+.title{
+  font-weight:700;
+  font-size:18px;
+  letter-spacing:0.2px;
+  color:var(--text);
+}
+
+.controls{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  font-size:14px;
+  color:var(--muted);
+}
+
+.controls input[type="file"]{ font-size:13px; }
+
+.layout{
+  display:grid;
+  grid-template-columns:220px 1fr 420px;
+  gap:var(--gap);
+  padding:18px;
+  align-items:start;
+  min-height:calc(100% - 64px);
+}
+
+/* Sidebar: concept list */
+.sidebar{
+  background:var(--panel);
+  border:1px solid var(--card-border);
+  padding:12px;
+  border-radius:var(--radius);
+  box-shadow: 0 4px 10px rgba(16,24,40,0.04);
+  height:100%;
+  overflow:auto;
+}
+
+.sidebar h3{ margin:0 0 8px 0; font-size:15px; color:var(--text); }
+
+.concept-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+
+.concept-list li{
+  padding:10px;
+  border-radius:8px;
+  background: linear-gradient(180deg, rgba(147,197,253,0.08), rgba(147,197,253,0.03));
+  border:1px dashed rgba(37,99,235,0.08);
+  cursor:pointer;
+  font-size:14px;
+  color:var(--text);
+  transition:transform 120ms ease, box-shadow 120ms ease;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.concept-list li:hover{
+  transform:translateY(-3px);
+  box-shadow:0 6px 18px rgba(37,99,235,0.08);
+}
+
+.concept-list li .badge{
+  font-size:12px; color:var(--muted); background:transparent;
+}
+
+/* PDF viewer */
+.viewer{
+  background:var(--panel);
+  border:1px solid var(--card-border);
+  padding:12px;
+  border-radius:var(--radius);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  min-height:0;
+  box-shadow: 0 6px 18px rgba(12,18,40,0.03);
+}
+
+.pdf-toolbar{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin-bottom:10px;
+  color:var(--muted);
+  font-size:14px;
+}
+
+#pdf-canvas{
+  width:100%;
+  max-width:720px;
+  border-radius:8px;
+  background:#fff;
+  border:1px solid var(--card-border);
+  box-shadow: 0 10px 30px rgba(12,18,40,0.04);
+}
+
+/* Workspace area (concept cards) */
+.workspace{
+  background:var(--panel);
+  border:1px solid var(--card-border);
+  padding:12px;
+  border-radius:var(--radius);
+  overflow:auto;
+  height:100%;
+  box-shadow: 0 4px 12px rgba(12,18,40,0.03);
+}
+
+/* hint when empty */
+.workspace-hint{
+  color:var(--muted);
+  padding:18px;
+  border-radius:8px;
+  text-align:center;
+  background:linear-gradient(180deg, rgba(16,24,40,0.02), rgba(16,24,40,0.01));
+}
+
+/* Concept card style — friendly, roomy */
+.concept-card{
+  background:linear-gradient(180deg, #ffffff, #fbfdff);
+  border:1px solid var(--card-border);
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:14px;
+  box-shadow:0 8px 18px rgba(12,18,40,0.04);
+}
+
+.card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.concept-title{
+  font-weight:700;
+  font-size:16px;
+}
+
+.card-actions button{
+  background:transparent;
+  border:1px solid rgba(16,24,40,0.04);
+  padding:6px 8px;
+  border-radius:8px;
+  cursor:pointer;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.card-actions button:hover{ border-color:var(--accent-soft); color:var(--accent); transform:translateY(-1px); }
+
+/* Explanation block */
+.card-body .explanation{
+  background: #fbfdff;
+  border:1px dashed rgba(16,24,40,0.03);
+  padding:10px;
+  border-radius:8px;
+  min-height:90px;
+  color:var(--text);
+  white-space:pre-wrap;
+  font-size:14px;
+  line-height:1.5;
+  margin-bottom:12px;
+}
+
+/* Parameter area: simpler controls with clear labels */
+.params{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+}
+
+.params label{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:13px;
+  color:var(--muted);
+  min-width:120px;
+}
+
+/* Range sliders styled but simple */
+input[type="range"]{
+  -webkit-appearance:none;
+  height:6px;
+  background:linear-gradient(90deg, var(--accent-soft), rgba(37,99,235,0.2));
+  border-radius:6px;
+  outline:none;
+}
+
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:18px; height:18px; border-radius:50%;
+  background:var(--accent);
+  border:3px solid #fff;
+  box-shadow:0 2px 6px rgba(16,24,40,0.15);
+}
+
+/* selects and buttons */
+select, button, input[type="text"]{
+  font-size:14px;
+  padding:8px 10px;
+  border-radius:8px;
+  border:1px solid var(--card-border);
+  background:#fff;
+  color:var(--text);
+}
+
+/* Footer buttons */
+.card-footer{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:10px;
+}
+
+button{
+  cursor:pointer;
+  background:linear-gradient(180deg, #ffffff, #f3f7ff);
+  border:1px solid var(--card-border);
+  padding:8px 12px;
+  border-radius:8px;
+  color:var(--text);
+  transition:transform 120ms ease, box-shadow 120ms ease;
+}
+
+button:hover{ transform:translateY(-2px); box-shadow:0 8px 18px rgba(37,99,235,0.06); }
+
+/* Responsive adjustments for smaller screens */
+@media (max-width:1100px){
+  .layout{ grid-template-columns:200px 1fr; grid-auto-rows: auto; }
+  .workspace{ grid-column:1/-1; order:3; }
+  .viewer{ order:2; }
+}
