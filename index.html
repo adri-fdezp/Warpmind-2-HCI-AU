@@ -5,15 +5,13 @@
   <title>WarpMind Instrument</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
-  <!-- Add PDF.js library here (local file or CDN) -->
-  <script src="libs/pdf.min.js"></script>
 </head>
 <body>
   <header class="topbar">
-    <div class="title">WarpMind - Concept by Adrián and Grazia</div>
+    <div class="title">WarpMind - Concept Analyzer</div>
     <div class="controls">
       <input id="pdf-input" type="file" accept="application/pdf" />
-      <button id="load-sample">Load the PDF</button>
+      <button id="load-sample">Load PDF</button>
       <label><input id="use-mock" type="checkbox" checked /> Mock mode</label>
     </div>
   </header>
@@ -43,12 +41,12 @@
       <header class="card-header">
         <strong class="concept-title"></strong>
         <div class="card-actions">
-          <button class="duplicate-btn" title="Duplicate">⧉</button>
-          <button class="close-btn" title="Close">✕</button>
+          <button class="duplicate-btn">⧉</button>
+          <button class="close-btn">✕</button>
         </div>
       </header>
       <main class="card-body">
-        <div class="explanation" contenteditable="false">Loading explanation…</div>
+        <div class="explanation">Loading explanation…</div>
         <div class="params">
           <label>Complexity <input type="range" class="param-complexity" min="1" max="10" value="5" /></label>
           <label>Length <input type="range" class="param-length" min="5" max="50" value="15" /></label>
@@ -75,14 +73,11 @@
               <option>Conversational</option>
             </select>
           </label>
-          <label>Focus
-            <select class="param-focus">
-              <option>Definition</option>
-              <option>Mechanism</option>
-              <option>Use-cases</option>
-              <option>Mathematical Detail</option>
-            </select>
-          </label>
+          <div class="context-toggle">
+            <button class="toggle-btn active" data-value="Theory">Theory</button>
+            <button class="toggle-btn" data-value="Methods">Methods</button>
+            <button class="toggle-btn" data-value="Applications">Applications</button>
+          </div>
         </div>
       </main>
       <footer class="card-footer">
@@ -92,6 +87,8 @@
     </div>
   </template>
 
-  <script src="js/app.js"></script>
+<script src="https://warp.cs.au.dk/libs/warpmind.js"></script>  
+<script type="module" src="js/app.js"></script>
+ 
 </body>
 </html>
