@@ -234,8 +234,9 @@ html, body {
   white-space: pre-wrap;
   font-size: 14px;
   line-height: 1.6;
-  margin-bottom: 14px;
+  margin-top: 16px;
 }
+
 
 /* Parameters */
 .params {

@@ -62,68 +62,68 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Load PDF from file input
   loadBtn.addEventListener("click", async () => {
-  const file = fileInput.files[0];
+    const file = fileInput.files[0];
 
-  // --- RESET CONCEPT LIST AND WORKSPACE ---
-  conceptList.innerHTML = "";
-  workspace.innerHTML =
-    '<div class="workspace-hint">Open a concept from the left to start</div>';
+    // --- RESET CONCEPT LIST AND WORKSPACE ---
+    conceptList.innerHTML = "";
+    workspace.innerHTML =
+      '<div class="workspace-hint">Open a concept from the left to start</div>';
 
-  // --- Case 1: user uploads a file ---
-  if (file) {
-    const arrayBuffer = await file.arrayBuffer();
-    await loadPDF({ data: arrayBuffer });
-    extractConceptsFromPDF(pdfDoc);
-    return;
-  }
+    // --- Case 1: user uploads a file ---
+    if (file) {
+      const arrayBuffer = await file.arrayBuffer();
+      await loadPDF({ data: arrayBuffer });
+      extractConceptsFromPDF(pdfDoc);
+      return;
+    }
 
-  // --- Case 2: no file -> load default PDF ---
-  const defaultPDF = "sample.pdf"; 
-  try {
-    await loadPDF(defaultPDF);
-    extractConceptsFromPDF(pdfDoc);
-    console.log("Loaded default sample.pdf");
-  } catch (err) {
-    console.error("Failed to load default PDF:", err);
-    conceptList.innerHTML = "<li class='loading'>Error loading sample PDF</li>";
-  }
-});
-
-
- 
-// =========================
-// EXTRACT CONCEPTS
-// =========================
-async function extractConceptsFromPDF(pdf) {
-  // --- Show loading message ---
-  conceptList.innerHTML = '<li class="loading"> Extracting concepts, please wait...</li>';
-
-  let fullText = "";
-
-  // --- Extract all pages' text ---
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    const text = content.items.map((t) => t.str).join(" ");
-    fullText += text + "\n\n";
-  }
-
-  // --- MOCK MODE ---
-  if (useMock.checked) {
-    // simulate delay
-    await new Promise((res) => setTimeout(res, 1200));
-    const concepts = mockExtractConcepts(fullText);
-    showConceptList(concepts);
-    return;
-  }
-
-  // --- WARPMIND MODE ---
-  const warpMind = new WarpMind({
-    baseURL: "https://warp.cs.au.dk/mind",
-    apiKey: "" // your key
+    // --- Case 2: no file -> load default PDF ---
+    const defaultPDF = "sample.pdf";
+    try {
+      await loadPDF(defaultPDF);
+      extractConceptsFromPDF(pdfDoc);
+      console.log("Loaded default sample.pdf");
+    } catch (err) {
+      console.error("Failed to load default PDF:", err);
+      conceptList.innerHTML = "<li class='loading'>Error loading sample PDF</li>";
+    }
   });
 
-  const prompt = `
+
+
+  // =========================
+  // EXTRACT CONCEPTS
+  // =========================
+  async function extractConceptsFromPDF(pdf) {
+    // --- Show loading message ---
+    conceptList.innerHTML = '<li class="loading"> Extracting concepts, please wait...</li>';
+
+    let fullText = "";
+
+    // --- Extract all pages' text ---
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const text = content.items.map((t) => t.str).join(" ");
+      fullText += text + "\n\n";
+    }
+
+    // --- MOCK MODE ---
+    if (useMock.checked) {
+      // simulate delay
+      await new Promise((res) => setTimeout(res, 1200));
+      const concepts = mockExtractConcepts(fullText);
+      showConceptList(concepts);
+      return;
+    }
+
+    // --- WARPMIND MODE ---
+    const warpMind = new WarpMind({
+      baseURL: "https://warp.cs.au.dk/mind",
+      apiKey: "" // your key
+    });
+
+    const prompt = `
     Read the full text below, create a short academic summary (3–5 sentences),
     and then extract 10 key scientific or technical concepts from that summary.
     Ignore personal names (e.g., "Andreas", "Priyantha", "Chieh-Jan") and common words like "and", "the", "with".
@@ -138,55 +138,55 @@ async function extractConceptsFromPDF(pdf) {
     """${fullText}"""
     `;
 
-  const messages = [
-    { role: "system", content: "You are WarpMind. Extract academic concepts clearly." },
-    { role: "user", content: prompt }
-  ];
+    const messages = [
+      { role: "system", content: "You are WarpMind. Extract academic concepts clearly." },
+      { role: "user", content: prompt }
+    ];
 
-  let responseText = "";
-  try {
-    await warpMind.streamChat(messages, (chunk) => {
-      responseText += chunk.content;
-      conceptList.querySelector(".loading").textContent =
-        "Processing text with WarpMind…";
-    });
-
-    let concepts = [];
+    let responseText = "";
     try {
-      concepts = JSON.parse(responseText);
+      await warpMind.streamChat(messages, (chunk) => {
+        responseText += chunk.content;
+        conceptList.querySelector(".loading").textContent =
+          "Processing text with WarpMind…";
+      });
+
+      let concepts = [];
+      try {
+        concepts = JSON.parse(responseText);
+      } catch (err) {
+        console.warn("WarpMind did not return valid JSON. Using mock instead.");
+        concepts = mockExtractConcepts(fullText);
+      }
+
+      showConceptList(concepts);
     } catch (err) {
-      console.warn("WarpMind did not return valid JSON. Using mock instead.");
-      concepts = mockExtractConcepts(fullText);
+      console.error("WarpMind request failed:", err);
+      const fallback = mockExtractConcepts(fullText);
+      showConceptList(fallback);
     }
-
-    showConceptList(concepts);
-  } catch (err) {
-    console.error("WarpMind request failed:", err);
-    const fallback = mockExtractConcepts(fullText);
-    showConceptList(fallback);
   }
-}
 
-// =========================
-// MOCK CONCEPT EXTRACTION 
-// =========================
-function mockExtractConcepts(text) {
-  // create fake summary from text
-  const sentences = text.split(/[.!?]/).map((s) => s.trim()).filter(Boolean);
-  const summary = sentences.slice(0, 5).join(". ");
+  // =========================
+  // MOCK CONCEPT EXTRACTION 
+  // =========================
+  function mockExtractConcepts(text) {
+    // create fake summary from text
+    const sentences = text.split(/[.!?]/).map((s) => s.trim()).filter(Boolean);
+    const summary = sentences.slice(0, 5).join(". ");
 
-  // technical-sounding seed words
-  const techSeeds = [
-    "Wireless Networks", "Data Aggregation", "Routing Protocols",
-    "Energy Efficiency", "Signal Processing", "Distributed Systems",
-    "Machine Learning", "Localization", "Sensor Deployment",
-    "Fault Tolerance", "Cloud Integration", "Edge Computing"
-  ];
+    // technical-sounding seed words
+    const techSeeds = [
+      "Wireless Networks", "Data Aggregation", "Routing Protocols",
+      "Energy Efficiency", "Signal Processing", "Distributed Systems",
+      "Machine Learning", "Localization", "Sensor Deployment",
+      "Fault Tolerance", "Cloud Integration", "Edge Computing"
+    ];
 
-  // pick 10 unique pseudo-concepts
-  const picks = techSeeds.sort(() => 0.5 - Math.random()).slice(0, 10);
-  return picks.map((name, i) => ({ id: i, name }));
-}
+    // pick 10 unique pseudo-concepts
+    const picks = techSeeds.sort(() => 0.5 - Math.random()).slice(0, 10);
+    return picks.map((name, i) => ({ id: i, name }));
+  }
 
 
   // Display list of extracted concepts
@@ -200,6 +200,7 @@ function mockExtractConcepts(text) {
       conceptList.appendChild(li);
     });
   }
+
 
   // =========================
   // CONCEPT CARD VIEW
@@ -220,6 +221,10 @@ function mockExtractConcepts(text) {
     const tone = card.querySelector(".param-tone");
     const contextBtns = card.querySelectorAll(".toggle-btn");
 
+    // NEW params
+    const examplesCheckbox = card.querySelector(".param-examples");
+    const analogyRange = card.querySelector(".param-analogy");
+
     title.textContent = concept.name;
     explanation.textContent = "Generating explanation…";
     explanation.dataset.concept = concept.name;
@@ -236,17 +241,21 @@ function mockExtractConcepts(text) {
 
     function getParams() {
       return {
-        complexity: complexity.value,
-        length: length.value,
+        complexity: Number(complexity.value),
+        length: Number(length.value),
         audience: audience.value,
         form: form.value,
         tone: tone.value,
-        context: currentContext
+        context: currentContext,
+        examples: examplesCheckbox.checked,
+        analogy_strength: Number(analogyRange.value)
       };
     }
 
-    [complexity, length, audience, form, tone].forEach((p) => {
+    // Recompute when any param changes
+    [complexity, length, audience, form, tone, examplesCheckbox, analogyRange].forEach((p) => {
       p.addEventListener("input", () => generateExplanation(getParams(), explanation));
+      p.addEventListener("change", () => generateExplanation(getParams(), explanation));
     });
 
     refreshBtn.addEventListener("click", () => generateExplanation(getParams(), explanation));
@@ -275,38 +284,91 @@ function mockExtractConcepts(text) {
     outputEl.textContent = "Generating explanation…";
     outputEl.classList.add("loading");
 
+    // Build a concise instruction that encodes all parameters
+    function buildInstruction(conceptName, paramsObj) {
+      const lines = [];
+      lines.push(`Explain the concept "${conceptName}".`);
+      lines.push(`Complexity: ${paramsObj.complexity} (1 = simplest, 10 = most technical).`);
+      lines.push(`Length: approx ${paramsObj.length} sentences.`);
+      lines.push(`Audience: ${paramsObj.audience}.`);
+      lines.push(`Form: ${paramsObj.form}.`);
+      lines.push(`Tone: ${paramsObj.tone}.`);
+      lines.push(`Context: ${paramsObj.context}.`);
+      lines.push(`Include concrete examples: ${paramsObj.examples ? "Yes" : "No"}.`);
+      lines.push(`Analogy strength: ${paramsObj.analogy_strength} (0 = none, 5 = strong).`);
+      lines.push(`Return a clear, readable explanation. If form is 'Bulleted', give bullet points.`);
+      return lines.join(" ");
+    }
 
     if (useMock.checked) {
-      await new Promise((res) => setTimeout(res, 300));
-      outputEl.textContent = `Concept explanation
-      Complexity: ${params.complexity}
-      Audience: ${params.audience}
-      Tone: ${params.tone}
-      Context: ${params.context}
-      Form: ${params.form} (${params.length} sentences simulated.)`;
+      // Small delay to simulate remote call
+      await new Promise((res) => setTimeout(res, 350));
+
+      // Compose a mock explanation respecting params
+      const lines = [];
+      lines.push(`${outputEl.dataset.concept} — a short explanation.`);
+      lines.push(`(Complexity ${params.complexity}, Audience: ${params.audience}, Tone: ${params.tone}, Context: ${params.context})`);
+      if (params.form === "Prose") {
+        // create multiple sentences according to length
+        for (let i = 0; i < Math.max(1, Math.round(params.length / 3)); i++) {
+          let sentence = `Sentence ${i + 1} about ${outputEl.dataset.concept}.`;
+          // add analogy if analogy_strength > 0
+          if (params.analogy_strength > 0 && i === 0) {
+            sentence += ` (Analogy level ${params.analogy_strength}: imagine it as a ${["tool", "map", "machine", "network", "ecosystem"][params.analogy_strength % 5]}.)`;
+          }
+          lines.push(sentence);
+        }
+        if (params.examples) {
+          lines.push("Examples: 1) Example A illustrating the concept. 2) Example B with applied context.");
+        }
+      } else {
+        // Bulleted form: create a few bullets based on length
+        const bullets = Math.max(2, Math.round(params.length / 10));
+        for (let b = 0; b < bullets; b++) {
+          let bullet = `• Key point ${b + 1} about ${outputEl.dataset.concept}.`;
+          if (params.examples && b === 0) bullet += " (example included)";
+          lines.push(bullet);
+        }
+        if (params.analogy_strength > 0) {
+          lines.push(`• Analogy: (strength ${params.analogy_strength}) Picture it as ...`);
+        }
+      }
+
+      outputEl.textContent = lines.join("\n\n");
       outputEl.classList.remove("loading");
       outputEl.style.opacity = 1;
       return;
     }
 
+    // ========== WarpMind (real) mode ==========
     const warpMind = new WarpMind({
       baseURL: "https://warp.cs.au.dk/mind",
-      apiKey: "" //add key
+      apiKey: "788cc049-4bce-451f-845c-f8fc76f9c835" //key
     });
 
+    const instruction = buildInstruction(outputEl.dataset.concept, params);
+
     const messages = [
-      { role: "system", content: "You are WarpMind. Explain a concept clearly." },
-      { role: "user", content: `Explain "${outputEl.dataset.concept}" with complexity ${params.complexity}, length ${params.length}, audience ${params.audience}, form ${params.form}, tone ${params.tone}, context ${params.context}.` }
+      { role: "system", content: "You are WarpMind. Produce clear academic explanations that obey explicit parameterized instructions." },
+      { role: "user", content: instruction }
     ];
 
     let response = "";
-    await warpMind.streamChat(messages, (chunk) => {
-      response += chunk.content;
-      outputEl.textContent = response;
-    });
+    try {
+      await warpMind.streamChat(messages, (chunk) => {
+        response += chunk.content;
+        outputEl.textContent = response;
+      });
+    } catch (err) {
+      console.error("WarpMind streaming failed:", err);
+      outputEl.textContent = "Failed to generate via WarpMind — showing fallback.";
+      // fallback to mock
+      await new Promise((res) => setTimeout(res, 200));
+      generateExplanation(params, outputEl); // call again in mock mode fallback if warpMind failed
+      return;
+    }
 
     outputEl.classList.remove("loading");
     outputEl.style.opacity = 1;
-
   }
 });
