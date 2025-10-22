@@ -277,14 +277,29 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================
-  // GENERATE CONCEPT EXPLANATION
+  // GENERATE CONCEPT EXPLANATION 
   // =========================
   async function generateExplanation(params, outputEl) {
 
     outputEl.textContent = "Generating explanation…";
     outputEl.classList.add("loading");
 
-    // Build a concise instruction that encodes all parameters
+    // Make a readable summary of current parameters
+    function buildParamSummary(p) {
+      return (
+        `Parameters → ` +
+        `Complexity: ${p.complexity}, ` +
+        `Length: ${p.length}, ` +
+        `Audience: ${p.audience}, ` +
+        `Form: ${p.form}, ` +
+        `Tone: ${p.tone}, ` +
+        `Context: ${p.context}, ` +
+        `Examples: ${p.examples ? "Yes" : "No"}, ` +
+        `Analogy strength: ${p.analogy_strength}`
+      );
+    }
+
+    // Build an instruction string for WarpMind
     function buildInstruction(conceptName, paramsObj) {
       const lines = [];
       lines.push(`Explain the concept "${conceptName}".`);
@@ -300,19 +315,20 @@ document.addEventListener("DOMContentLoaded", () => {
       return lines.join(" ");
     }
 
+    const summaryText = buildParamSummary(params);
+
+    // ========== MOCK MODE ==========
     if (useMock.checked) {
-      // Small delay to simulate remote call
       await new Promise((res) => setTimeout(res, 350));
 
-      // Compose a mock explanation respecting params
       const lines = [];
-      lines.push(`${outputEl.dataset.concept} — a short explanation.`);
-      lines.push(`(Complexity ${params.complexity}, Audience: ${params.audience}, Tone: ${params.tone}, Context: ${params.context})`);
+      lines.push(summaryText);
+      lines.push(""); // spacer
+      lines.push(`${outputEl.dataset.concept} — simulated explanation:`);
+
       if (params.form === "Prose") {
-        // create multiple sentences according to length
         for (let i = 0; i < Math.max(1, Math.round(params.length / 3)); i++) {
           let sentence = `Sentence ${i + 1} about ${outputEl.dataset.concept}.`;
-          // add analogy if analogy_strength > 0
           if (params.analogy_strength > 0 && i === 0) {
             sentence += ` (Analogy level ${params.analogy_strength}: imagine it as a ${["tool", "map", "machine", "network", "ecosystem"][params.analogy_strength % 5]}.)`;
           }
@@ -322,7 +338,6 @@ document.addEventListener("DOMContentLoaded", () => {
           lines.push("Examples: 1) Example A illustrating the concept. 2) Example B with applied context.");
         }
       } else {
-        // Bulleted form: create a few bullets based on length
         const bullets = Math.max(2, Math.round(params.length / 10));
         for (let b = 0; b < bullets; b++) {
           let bullet = `• Key point ${b + 1} about ${outputEl.dataset.concept}.`;
@@ -340,10 +355,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // ========== WarpMind (real) mode ==========
+    // ========== WARPMIND (real) MODE ==========
     const warpMind = new WarpMind({
       baseURL: "https://warp.cs.au.dk/mind",
-      apiKey: "788cc049-4bce-451f-845c-f8fc76f9c835" //key
+      apiKey: "788cc049-4bce-451f-845c-f8fc76f9c835"
     });
 
     const instruction = buildInstruction(outputEl.dataset.concept, params);
@@ -357,18 +372,18 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       await warpMind.streamChat(messages, (chunk) => {
         response += chunk.content;
-        outputEl.textContent = response;
+        outputEl.textContent = summaryText + "\n\n" + response;
       });
     } catch (err) {
       console.error("WarpMind streaming failed:", err);
-      outputEl.textContent = "Failed to generate via WarpMind — showing fallback.";
-      // fallback to mock
+      outputEl.textContent = summaryText + "\n\n" + "⚠️ Failed to generate via WarpMind — showing fallback.";
       await new Promise((res) => setTimeout(res, 200));
-      generateExplanation(params, outputEl); // call again in mock mode fallback if warpMind failed
+      generateExplanation(params, outputEl); // fallback to mock
       return;
     }
 
     outputEl.classList.remove("loading");
     outputEl.style.opacity = 1;
   }
+
 });

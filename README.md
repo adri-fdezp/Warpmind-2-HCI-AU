@@ -30,7 +30,9 @@ The UI is built purely with **HTML, CSS, and JavaScript** without any CSS or JS 
      - **Audience**: e.g., Five-year-old, Bachelor, Master, PhD, Policy maker  
      - **Form**: Prose or Bulleted  
      - **Tone**: Neutral, Formal, Conversational, Analogies  
-     - **Context toggle**: Theory, Methods, Applications  
+     - **Context toggle**: Theory, Methods, Applications
+     - **Example Button**: Adds an example to the explanation
+     - **Analogy strength**: level of the analogy
 
 4. **Multiple concept views**  
    - Several concept cards can be opened simultaneously.  
