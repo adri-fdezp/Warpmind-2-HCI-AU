@@ -12,11 +12,40 @@
   font-size: 16px;
 }
 
+
+/* PWe make that we dont have to scroll the main webpage and only the modules*/
 * { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); }
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden; /* Prevent full-page scrolling */
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Layout */
+.layout {
+  display: grid;
+  grid-template-columns: 220px 1fr 420px;
+  gap: var(--gap);
+  height: calc(100vh - 64px); /* Fill the remaining space below the topbar */
+  padding: 20px;
+  align-items: stretch;
+  box-sizing: border-box;
+  margin-top: 64px; /* Push content below the fixed topbar (I had to try a lot of times the px number) */
+}
+
+
 
 /* Topbar */
 .topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 64px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -24,13 +53,33 @@ html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text);
   background: linear-gradient(180deg, rgba(37,99,235,0.08), rgba(37,99,235,0.12));
   border-bottom: 1px solid var(--card-border);
   gap: 12px;
+  z-index: 10;
 }
+
+/* Improved title with easy animation */
 .title {
   font-weight: 700;
-  font-size: 20px;
-  letter-spacing: 0.2px;
+  font-size: 22px;
+  letter-spacing: 0.3px;
   color: var(--accent);
+  background: linear-gradient(90deg, #2563eb, #1e40af);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-shadow: 0 1px 2px rgba(37, 99, 235, 0.25);
+  font-family: "Segoe UI Semibold", "Helvetica Neue", Arial, sans-serif;
+  user-select: none;
 }
+
+.title::before {
+  content: "⚡";
+  font-size: 25px;
+  color: #2563eb;
+  filter: drop-shadow(0 0 2px rgba(113, 143, 208, 0.4));
+}
+
 .controls {
   display: flex;
   gap: 10px;
@@ -275,4 +324,11 @@ button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,99,23
 
 .explanation.loading {
   animation: subtlePulse 1.5s ease-in-out infinite;
+}
+
+
+/* Making panels scrolleable */
+.sidebar, .viewer, .workspace {
+  overflow: auto;
+  height: 100%;
 }
