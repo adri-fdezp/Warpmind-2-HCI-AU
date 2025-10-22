@@ -81,6 +81,20 @@ html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text);
   background: linear-gradient(180deg, rgba(147,197,253,0.2), rgba(147,197,253,0.1));
 }
 
+.loading {
+  list-style: none;
+  font-style: italic;
+  color: #666;
+  padding: 10px;
+  animation: pulse 1.4s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+ 
 /* PDF viewer */
 .viewer {
   background: var(--panel);
@@ -128,6 +142,7 @@ html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text);
   text-align: center;
   background: linear-gradient(180deg, rgba(37,99,235,0.03), rgba(37,99,235,0.01));
 }
+
 
 /* Concept cards */
 .concept-card {

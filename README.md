@@ -41,8 +41,6 @@ The UI is built purely with **HTML, CSS, and JavaScript** without any CSS or JS 
    - Interactive hover effects for concept list and cards.  
    - Fully responsive layout for different screen sizes.  
 
----
 
-## To-Do List / Improvements Needed
 
-- **Improve WarpMind concept extraction**  
+ 
