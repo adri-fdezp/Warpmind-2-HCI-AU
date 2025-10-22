@@ -62,21 +62,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Load PDF from file input
   loadBtn.addEventListener("click", async () => {
-    const file = fileInput.files[0];
-    if (file) {
-      const arrayBuffer = await file.arrayBuffer();
-      await loadPDF({ data: arrayBuffer });
+  const file = fileInput.files[0];
 
-      // --- RESET DELLE CONCEPT LIST E WORKSPACE ---
-      conceptList.innerHTML = "";
-      workspace.innerHTML =
-        '<div class="workspace-hint">Open a concept from the left to start</div>';
+  // --- RESET CONCEPT LIST AND WORKSPACE ---
+  conceptList.innerHTML = "";
+  workspace.innerHTML =
+    '<div class="workspace-hint">Open a concept from the left to start</div>';
 
-      extractConceptsFromPDF(pdfDoc);
-    } else {
-      console.warn("No file selected. Cannot load PDF.");
-    }
-  });
+  // --- Case 1: user uploads a file ---
+  if (file) {
+    const arrayBuffer = await file.arrayBuffer();
+    await loadPDF({ data: arrayBuffer });
+    extractConceptsFromPDF(pdfDoc);
+    return;
+  }
+
+  // --- Case 2: no file -> load default PDF ---
+  const defaultPDF = "sample.pdf"; 
+  try {
+    await loadPDF(defaultPDF);
+    extractConceptsFromPDF(pdfDoc);
+    console.log("Loaded default sample.pdf");
+  } catch (err) {
+    console.error("Failed to load default PDF:", err);
+    conceptList.innerHTML = "<li class='loading'>Error loading sample PDF</li>";
+  }
+});
+
 
  
 // =========================
@@ -251,7 +263,7 @@ function mockExtractConcepts(text) {
     const hint = workspace.querySelector(".workspace-hint");
     if (hint) hint.remove();
     workspace.appendChild(card);
-
+    workspace.scrollTo({ top: workspace.scrollHeight, behavior: "smooth" });
     generateExplanation(getParams(), explanation);
   }
 
@@ -259,8 +271,10 @@ function mockExtractConcepts(text) {
   // GENERATE CONCEPT EXPLANATION
   // =========================
   async function generateExplanation(params, outputEl) {
-    outputEl.style.opacity = 0.5;
+
     outputEl.textContent = "Generating explanation…";
+    outputEl.classList.add("loading");
+
 
     if (useMock.checked) {
       await new Promise((res) => setTimeout(res, 300));
@@ -270,6 +284,7 @@ function mockExtractConcepts(text) {
       Tone: ${params.tone}
       Context: ${params.context}
       Form: ${params.form} (${params.length} sentences simulated.)`;
+      outputEl.classList.remove("loading");
       outputEl.style.opacity = 1;
       return;
     }
@@ -290,6 +305,8 @@ function mockExtractConcepts(text) {
       outputEl.textContent = response;
     });
 
+    outputEl.classList.remove("loading");
     outputEl.style.opacity = 1;
+
   }
 });

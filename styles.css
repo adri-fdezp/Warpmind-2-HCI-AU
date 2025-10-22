@@ -265,3 +265,14 @@ button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,99,23
   .workspace { grid-column: 1/-1; order: 3; }
   .viewer { order: 2; }
 }
+
+/* Loading animation for explanations */
+@keyframes subtlePulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+.explanation.loading {
+  animation: subtlePulse 1.5s ease-in-out infinite;
+}
