@@ -358,7 +358,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ========== WARPMIND (real) MODE ==========
     const warpMind = new WarpMind({
       baseURL: "https://warp.cs.au.dk/mind",
-      apiKey: "788cc049-4bce-451f-845c-f8fc76f9c835"
+      apiKey: ""
     });
 
     const instruction = buildInstruction(outputEl.dataset.concept, params);
