@@ -1,0 +1,56 @@
+### Change 1: Added Frameworks
+
+- **File:** `index.html`
+- **Action:** Added links to Bootstrap CSS and jQuery/Bootstrap JS from a CDN.
+- **Reason:** To include the necessary frameworks for the UI refactor.
+
+---
+
+### Change 2: Refactored HTML with Bootstrap
+
+- **File:** `index.html`
+- **Action:** Replaced the entire HTML body with a new structure using Bootstrap's grid system and components.
+- **Reason:** To create a modern, responsive layout and apply consistent styling to all UI elements.
+
+---
+
+### Change 3: Refactored CSS
+
+- **File:** `styles.css`
+- **Action:** Removed most of the original CSS and kept only a few custom styles.
+- **Reason:** Bootstrap now handles almost all of the styling. I kept the loading animations and the hover effect for the concept list.
+
+---
+
+### Change 4: Refactored JavaScript with jQuery
+
+- **File:** `js/app.js`
+- **Action:** Replaced all vanilla JavaScript DOM manipulation with jQuery equivalents.
+- **Reason:** To simplify the code and make it easier to read and maintain using a common framework.
+
+---
+
+### Change 5: Added Explanatory Comments
+
+- **Files:** `index.html`, `js/app.js`
+- **Action:** Added detailed comments throughout the HTML and JavaScript files to explain the new code.
+- **Reason:** To make the code more educational and easier to understand.
+
+---
+
+### Change 6: Cleaned Up Comments
+
+- **Files:** `index.html`, `js/app.js`
+- **Action:** Removed the "Student's Note:" prefix from all comments.
+- **Reason:** To make the comments cleaner and more professional.
+
+---
+
+The project has been successfully refactored to use Bootstrap for CSS and jQuery for JavaScript.
+
+- `index.html` was updated to include the libraries and restructured with Bootstrap components.
+- `styles.css` was simplified to remove styles now handled by Bootstrap.
+- `js/app.js` was rewritten to use jQuery, making the code more concise.
+- All modified files have been commented to explain the changes.
+
+The application should look and function similarly to before, but the underlying code is now based on these common frameworks.

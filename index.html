@@ -1,109 +1,167 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-g" />
   <title>WarpMind Instrument</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <!-- I'm adding the Bootstrap CSS from a CDN. -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  
+  <!-- My custom stylesheet is linked last so it can override Bootstrap if needed. -->
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-  <header class="topbar">
-    <div class="title">WarpMind - Concept Analyzer</div>
-    <div class="controls">
-      <input id="pdf-input" type="file" accept="application/pdf" />
-      <button id="load-sample">Load PDF</button>
-      <label><input id="use-mock" type="checkbox" checked /> Mock mode</label>
+<body class="bg-light">
+
+  <!-- This is the new header using Bootstrap's navbar component. -->
+  <header class="navbar navbar-expand-lg bg-white border-bottom">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">WarpMind - Concept Analyzer</a>
+      <div class="d-flex align-items-center">
+        <!-- Using Bootstrap form-control and button (btn) classes for styling. -->
+        <input id="pdf-input" type="file" accept="application/pdf" class="form-control form-control-sm me-2" />
+        <button id="load-sample" class="btn btn-primary btn-sm me-3">Load PDF</button>
+        <div class="form-check">
+          <input id="use-mock" type="checkbox" class="form-check-input" checked />
+          <label class="form-check-label" for="use-mock">Mock mode</label>
+        </div>
+      </div>
     </div>
   </header>
 
-  <main class="layout">
-    <aside class="sidebar">
-      <h3>Extracted concepts</h3>
-      <ul id="concept-list" class="concept-list"></ul>
-    </aside>
+  <!-- This is the main layout using Bootstrap's grid system. -->
+  <!-- 'container-fluid' makes it full-width. 'mt-3' adds some margin on top. -->
+  <main class="container-fluid mt-3">
+    <!-- A 'row' is a wrapper for columns. -->
+    <div class="row">
+      
+      <!-- These are the columns. 'col-md-3' means it takes up 3 of 12 available units on medium screens and up. -->
+      <aside class="col-md-3">
+        <div class="p-3 bg-white rounded-3">
+          <h3>Extracted concepts</h3>
+          <!-- The concept list is now a Bootstrap 'list-group'. -->
+          <ul id="concept-list" class="list-group"></ul>
+        </div>
+      </aside>
 
-    <section class="viewer">
-      <div class="pdf-toolbar">
-        <button id="prev-page">&lt;</button>
-        <span id="page-num">0</span> / <span id="page-count">0</span>
-        <button id="next-page">&gt;</button>
-      </div>
-      <canvas id="pdf-canvas"></canvas>
-    </section>
+      <!-- The PDF viewer column. -->
+      <section class="col-md-5">
+        <div class="p-3 bg-white rounded-3">
+          <!-- Using Bootstrap's button group for the PDF controls. -->
+          <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group btn-group-sm mx-auto" role="group">
+              <button id="prev-page" class="btn btn-outline-secondary">&lt;</button>
+              <span class="btn btn-outline-secondary disabled" style="width: 100px;">
+                <span id="page-num">0</span> / <span id="page-count">0</span>
+              </span>
+              <button id="next-page" class="btn btn-outline-secondary">&gt;</button>
+            </div>
+          </div>
+          <canvas id="pdf-canvas" class="w-100 mt-2 border"></canvas>
+        </div>
+      </section>
 
-    <section class="workspace" id="workspace">
-      <div class="workspace-hint">Open a concept from the left to start</div>
-    </section>
+      <!-- The workspace column. -->
+      <section class="col-md-4" id="workspace">
+        <div class="p-3 bg-white rounded-3 h-100 d-flex align-items-center justify-content-center">
+          <div class="workspace-hint">Open a concept from the left to start</div>
+        </div>
+      </section>
+
+    </div>
   </main>
 
+<!-- 
+  This is the template for a concept card. 
+  I've rebuilt it using the Bootstrap 'card' component for a consistent look and feel.
+-->
 <template id="concept-view-template">
-  <div class="concept-card">
-    <header class="card-header">
+  <!-- The main card container -->
+  <div class="concept-card card">
+    <!-- Card header -->
+    <header class="card-header d-flex justify-content-between align-items-center">
       <strong class="concept-title"></strong>
       <div class="card-actions">
-        <button class="duplicate-btn" title="Duplicate">⧉</button>
-        <button class="close-btn" title="Close">✕</button>
+        <button class="duplicate-btn btn btn-sm btn-outline-secondary" title="Duplicate">⧉</button>
+        <button class="close-btn btn btn-sm btn-close" title="Close"></button>
       </div>
     </header>
+    <!-- Card body for the main content -->
     <main class="card-body">
 
-      <!-- PARAMETERS FIRST -->
-      <div class="params">
-        <label>Complexity <input type="range" class="param-complexity" min="1" max="10" value="5" /></label>
-        <label>Length <input type="range" class="param-length" min="5" max="50" value="15" /></label>
-        <label>Audience
-          <select class="param-audience">
+      <!-- I'm using Bootstrap's grid system (row, col) again here for the form layout. -->
+      <div class="params row g-3">
+        <!-- Each form element is styled with Bootstrap classes like 'form-label', 'form-range', 'form-select'. -->
+        <div class="col-12">
+          <label for="param-complexity" class="form-label">Complexity</label>
+          <input type="range" class="param-complexity form-range" min="1" max="10" value="5" />
+        </div>
+        <div class="col-12">
+          <label for="param-length" class="form-label">Length</label>
+          <input type="range" class="param-length form-range" min="5" max="50" value="15" />
+        </div>
+        <div class="col-md-6">
+          <label for="param-audience" class="form-label">Audience</label>
+          <select class="param-audience form-select">
             <option>Five-year-old</option>
             <option>Bachelor</option>
             <option>Master</option>
             <option>PhD</option>
             <option>Policy maker</option>
           </select>
-        </label>
-        <label>Form
-          <select class="param-form">
+        </div>
+        <div class="col-md-6">
+          <label for="param-form" class="form-label">Form</label>
+          <select class="param-form form-select">
             <option>Prose</option>
             <option>Bulleted</option>
           </select>
-        </label>
-        <label>Tone
-          <select class="param-tone">
+        </div>
+        <div class="col-md-6">
+          <label for="param-tone" class="form-label">Tone</label>
+          <select class="param-tone form-select">
             <option>Neutral</option>
             <option>Analogies</option>
             <option>Formal</option>
             <option>Conversational</option>
           </select>
-        </label>
-
-        <!-- Extra parameters required by assignment -->
-        <label style="display:flex;flex-direction:column;gap:6px;">
-          Examples
-          <label style="font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px;">
-            <input type="checkbox" class="param-examples" /> Include concrete examples
-          </label>
-        </label>
-
-        <label>Analogy strength <input type="range" class="param-analogy" min="0" max="5" value="2" /></label>
-
-        <div class="context-toggle">
-          <button class="toggle-btn active" data-value="Theory">Theory</button>
-          <button class="toggle-btn" data-value="Methods">Methods</button>
-          <button class="toggle-btn" data-value="Applications">Applications</button>
+        </div>
+        <div class="col-md-6 d-flex align-items-end">
+          <div class="form-check">
+            <input type="checkbox" class="param-examples form-check-input" />
+            <label class="form-check-label" for="param-examples">Include concrete examples</label>
+          </div>
+        </div>
+        <div class="col-12">
+          <label for="param-analogy" class="form-label">Analogy strength</label>
+          <input type="range" class="param-analogy form-range" min="0" max="5" value="2" />
+        </div>
+        <div class="col-12">
+          <div class="context-toggle btn-group w-100" role="group">
+            <button class="toggle-btn btn btn-outline-primary active" data-value="Theory">Theory</button>
+            <button class="toggle-btn btn btn-outline-primary" data-value="Methods">Methods</button>
+            <button class="toggle-btn btn btn-outline-primary" data-value="Applications">Applications</button>
+          </div>
         </div>
       </div>
 
-      <!-- EXPLANATION BELOW -->
-      <div class="explanation">Loading explanation…</div>
+      <div class="explanation mt-3 p-3 bg-light rounded">Loading explanation…</div>
 
     </main>
-    <footer class="card-footer">
-      <button class="refresh-btn">Refresh</button>
-      <button class="copy-btn">Copy</button>
+    <!-- Card footer with styled buttons -->
+    <footer class="card-footer d-flex justify-content-end">
+      <button class="refresh-btn btn btn-success me-2">Refresh</button>
+      <button class="copy-btn btn btn-secondary">Copy</button>
     </footer>
   </div>
 </template>
 
-
+<!-- 
+  Script tags are at the bottom.
+  jQuery needs to be loaded before Bootstrap's JS, because Bootstrap's JS depends on jQuery.
+-->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://warp.cs.au.dk/libs/warpmind.js"></script>  
 <script type="module" src="js/app.js"></script>
  
