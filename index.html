@@ -35,8 +35,13 @@
     <!-- A 'row' is a wrapper for columns. -->
     <div class="row">
       
-      <!-- These are the columns. 'col-md-3' means it takes up 3 of 12 available units on medium screens and up. -->
-      <aside class="col-md-3">
+      <!-- These are the columns.
+           - On extra-small (xs) screens, this sidebar will take the full width (col-12).
+           - On medium (md) screens, it will take 4 out of 12 columns.
+           - On large (lg) screens and up, it will take 3 out of 12 columns (its original size).
+           This makes it stack nicely on smaller devices.
+      -->
+      <aside class="col-12 col-md-4 col-lg-3">
         <div class="p-3 bg-white rounded-3">
           <h3>Extracted concepts</h3>
           <!-- The concept list is now a Bootstrap 'list-group'. -->
@@ -44,8 +49,12 @@
         </div>
       </aside>
 
-      <!-- The PDF viewer column. -->
-      <section class="col-md-5">
+      <!-- The PDF viewer column.
+           - On extra-small (xs) screens, it will take the full width (col-12).
+           - On medium (md) screens, it will take 8 out of 12 columns.
+           - On large (lg) screens and up, it will take 5 out of 12 columns (its original size).
+      -->
+      <section class="col-12 col-md-8 col-lg-5">
         <div class="p-3 bg-white rounded-3">
           <!-- Using Bootstrap's button group for the PDF controls. -->
           <div class="btn-toolbar" role="toolbar">
@@ -61,8 +70,13 @@
         </div>
       </section>
 
-      <!-- The workspace column. -->
-      <section class="col-md-4" id="workspace">
+      <!-- The workspace column.
+           - On extra-small (xs) and medium (md) screens, it will take the full width (col-12).
+           - On large (lg) screens and up, it will take 4 out of 12 columns (its original size).
+           - 'order-md-last' makes sure this section appears after the sidebar and viewer on medium screens and up,
+             which is a good layout for smaller screens to prioritize primary content.
+      -->
+      <section class="col-12 col-lg-4 order-md-last" id="workspace">
         <div class="p-3 bg-white rounded-3 h-100 d-flex align-items-center justify-content-center">
           <div class="workspace-hint">Open a concept from the left to start</div>
         </div>
