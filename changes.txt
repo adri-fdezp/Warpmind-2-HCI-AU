@@ -50,11 +50,9 @@
 
 - **File:** `index.html`
 - **Action:** Adjusted Bootstrap column classes and added responsive utility classes.
-- **Reason:** To make the layout adapt better to different screen sizes (desktops, tablets, phones). The columns now stack more effectively on smaller screens and utilize screen space efficiently.
+- **Reason:** To make the layout adapt better to different screen sizes (desktops, tablets, phones).
 
 ---
-
-**Summary of Refactor**
 
 The project has been successfully refactored to use Bootstrap for CSS and jQuery for JavaScript.
 
@@ -63,5 +61,6 @@ The project has been successfully refactored to use Bootstrap for CSS and jQuery
 - `js/app.js` was rewritten to use jQuery, making the code more concise.
 - All modified files have been commented to explain the changes.
 - The layout has been made responsive using Bootstrap's grid system.
+- Emojis were added for a final visual touch.
 
-The application should look and function similarly to before, but the underlying code is now based on these common frameworks, and the UI is now responsive.
+The application should look and function similarly to before, but the underlying code is now based on these common frameworks, and the UI is now responsive and more visually engaging.
