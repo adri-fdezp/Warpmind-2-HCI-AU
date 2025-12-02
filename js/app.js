@@ -98,25 +98,89 @@ $(document).ready(() => {
   // =========================
   // EXTRACT CONCEPTS
   // =========================
-  async function extractConceptsFromPDF(pdf) {
-    conceptList.html('<li class="list-group-item loading">Extracting concepts, please wait...</li>');
-    let fullText = "";
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
-      const text = content.items.map((t) => t.str).join(" ");
-      fullText += text + "\n\n";
+// =========================
+// EXTRACT CONCEPTS
+// =========================
+async function extractConceptsFromPDF(pdf) {
+  conceptList.html('<li class="list-group-item loading">Extracting concepts, please wait...</li>');
+  let fullText = "";
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const text = content.items.map((t) => t.str).join(" ");
+    fullText += text + "\n\n";
+  }
+
+  // .is(':checked') is the jQuery way to see if a checkbox is checked.
+  if (useMock.is(':checked')) {
+    await new Promise((res) => setTimeout(res, 1200));
+    const concepts = mockExtractConcepts(fullText);
+    showConceptList(concepts);
+    return;
+  }
+
+  // =========================
+  // WARPMIND MODE
+  // This is the real version of the concept extraction.
+  // I'm keeping the same teaching-style comments you used above.
+  // =========================
+  const warpMind = new WarpMind({
+    baseURL: "https://warp.cs.au.dk/mind",
+    apiKey: " " //
+  });
+
+  // This is the prompt we send to WarpMind.
+  // It takes the full PDF text and asks for a mini-summary + 10 key concepts.
+  const prompt = `
+Read the full text below, create a short academic summary (3–5 sentences),
+and then extract 10 key scientific or technical concepts from that summary.
+Ignore personal names and common stop words.
+
+Return ONLY a JSON array like this:
+[
+  { "name": "concept 1" },
+  { "name": "concept 2" }
+]
+
+Text:
+"""${fullText}"""
+`;
+
+  // These “messages” follow the standard WarpMind/ChatML format.
+  const messages = [
+    { role: "system", content: "You are WarpMind. Extract academic concepts clearly." },
+    { role: "user", content: prompt }
+  ];
+
+  let responseText = "";
+
+  try {
+    // WarpMind supports streaming.  
+    // This callback fires every time a chunk of text arrives.
+    await warpMind.streamChat(messages, (chunk) => {
+      responseText += chunk.content;
+      conceptList.find(".loading").text("Processing text with WarpMind…");
+    });
+
+    let concepts = [];
+
+    // WarpMind returns plain text, so we attempt to parse it as JSON.
+    try {
+      concepts = JSON.parse(responseText);
+    } catch (err) {
+      console.warn("WarpMind did not return valid JSON. Falling back to mock mode.");
+      concepts = mockExtractConcepts(fullText);
     }
 
-    // .is(':checked') is the jQuery way to see if a checkbox is checked.
-    if (useMock.is(':checked')) {
-      await new Promise((res) => setTimeout(res, 1200));
-      const concepts = mockExtractConcepts(fullText);
-      showConceptList(concepts);
-      return;
-    }
-    // ... (WarpMind logic remains the same)
+    showConceptList(concepts);
+
+  } catch (err) {
+    console.error("WarpMind request failed:", err);
+    showConceptList(mockExtractConcepts(fullText));
   }
+}
+
 
   // MOCK CONCEPT EXTRACTION (No DOM manipulation, no changes needed)
   function mockExtractConcepts(text) {
@@ -214,16 +278,61 @@ $(document).ready(() => {
   // =========================
   // GENERATE CONCEPT EXPLANATION (This is mostly logic, not much jQuery)
   // =========================
-  async function generateExplanation(params, outputEl) {
-    outputEl.text("Generating explanation…").addClass("loading");
-    // ... (rest of the function is the same, as it's not DOM-heavy)
+  // =========================
+// GENERATE CONCEPT EXPLANATION (This is mostly logic, not much jQuery)
+// =========================
+async function generateExplanation(params, outputEl) {
 
-    if (useMock.is(':checked')) {
-      await new Promise((res) => setTimeout(res, 350));
-      const mockText = "Simulated explanation for " + outputEl.data('concept');
-      outputEl.text(mockText).removeClass("loading");
-      return;
-    }
+  outputEl.text("Generating explanation…").addClass("loading");
+
+  if (useMock.is(':checked')) {
+    await new Promise((res) => setTimeout(res, 350));
+    const mockText = "Simulated explanation for " + outputEl.data('concept');
+    outputEl.text(mockText).removeClass("loading");
+    return;
   }
+
+  // =========================
+  // REAL WARPMIND MODE
+  // This mirrors the previous version of your code.
+  // I follow exactly your comment style here too.
+  // =========================
+  const warpMind = new WarpMind({
+    baseURL: "https://warp.cs.au.dk/mind",
+    apiKey: " " // key
+  });
+
+  const conceptName = outputEl.data("concept");
+
+  // We build the prompt from the card parameters.
+  const prompt = `
+Explain the concept "${conceptName}" using the following parameters:
+${JSON.stringify(params, null, 2)}
+
+Return only the final explanation text, without formatting.
+`;
+
+  const messages = [
+    { role: "system", content: "You are WarpMind. Produce clear and academically grounded explanations." },
+    { role: "user", content: prompt }
+  ];
+
+  let responseText = "";
+
+  try {
+    // We stream the explanation, updating the UI live.
+    await warpMind.streamChat(messages, (chunk) => {
+      responseText += chunk.content;
+      outputEl.text(responseText);
+    });
+
+    outputEl.removeClass("loading");
+
+  } catch (err) {
+    console.error("WarpMind explanation failed:", err);
+    outputEl.text("Error generating explanation.").removeClass("loading");
+  }
+}
+
 
 });
